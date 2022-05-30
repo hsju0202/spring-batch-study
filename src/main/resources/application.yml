@@ -2,7 +2,9 @@ spring:
   profiles:
     active: local
 
-logging.level.org.springframework.batch: DEBUG
+logging:
+  level:
+    org.springframework.batch: DEBUG
 
 ---
 spring:
@@ -10,21 +12,19 @@ spring:
   profiles: local
 
   datasource:
-    hikari:
-      jdbc-url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-      username: sa
-      password:
-      driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
 ---
 spring:
   profiles: mysql
 
   datasource:
-    hikari:
-      jdbc-url: jdbc:mysql://localhost:3306/batchDB
-      username: root
-      password: root
-      driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/batchDB
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   batch:
     jdbc:
