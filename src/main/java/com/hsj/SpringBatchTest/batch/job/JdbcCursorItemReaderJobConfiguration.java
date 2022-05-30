@@ -6,10 +6,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -30,12 +33,13 @@ public class JdbcCursorItemReaderJobConfiguration {
     @Bean
     public Job jdbcCursorItemReaderJob() {
         return jobBuilderFactory.get("jdbcCursorItemReaderJob")
-                .start(jdbcCursorItemReaderStep())
+                .start(jdbcCursorItemReaderStep(null))
                 .build();
     }
 
     @Bean
-    public Step jdbcCursorItemReaderStep() {
+    @JobScope
+    public Step jdbcCursorItemReaderStep(@Value("#{jobParameters[requestDate]}") String requestDate) {
         return stepBuilderFactory.get("jdbcCursorItemReaderStep")
                 .<Pay, Pay>chunk(chunkSize)
                 .reader(jdbcCursorItemReader())
@@ -44,6 +48,7 @@ public class JdbcCursorItemReaderJobConfiguration {
     }
 
     @Bean
+    @StepScope
     public JdbcCursorItemReader<Pay> jdbcCursorItemReader() {
         return new JdbcCursorItemReaderBuilder<Pay>()
                 .fetchSize(chunkSize)
